@@ -1,40 +1,52 @@
 package roteador;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 
 public class Roteador {
 
-    public static void main(String[] args) throws IOException {
-        /* Lista de endereço IPs dos vizinhos */
-        ArrayList<String> ip_list = new ArrayList<>();
+    private static final String VIZINHOS_FILE = "IPVizinhos.txt";
 
-        /* Le arquivo de entrada com lista de IPs dos roteadores vizinhos. */
-        try ( BufferedReader inputFile = new BufferedReader(new FileReader("IPVizinhos.txt"))) {
-            String ip;
-            
-            while( (ip = inputFile.readLine()) != null){
-                ip_list.add(ip);
-            }
-            
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Roteador.class.getName()).log(Level.SEVERE, null, ex);
-            return;
+    public static void main(String[] args) {
+        List<InetAddress> vizinhos = readVizinhosFromFile(VIZINHOS_FILE);
+
+        try (DatagramSocket socket = new DatagramSocket()) {
+            TabelaRoteamento tabela = new TabelaRoteamento();
+
+            MessageReceiver receiver = new MessageReceiver(socket, tabela);
+            MessageSender sender = new MessageSender(socket, tabela, vizinhos.toArray(new InetAddress[0]));
+
+            Thread receiverThread = new Thread(receiver);
+            Thread senderThread = new Thread(sender);
+
+            receiverThread.start();
+            senderThread.start();
+
+            receiverThread.join();
+            senderThread.join();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
-        
-        /* Cria instâncias da tabela de roteamento e das threads de envio e recebimento de mensagens. */
-        TabelaRoteamento tabela = new TabelaRoteamento();
-        Thread sender = new Thread(new MessageReceiver(tabela));
-        Thread receiver = new Thread(new MessageSender(tabela, ip_list));
-        
-        sender.start();
-        receiver.start();
-        
     }
-    
+
+    private static List<InetAddress> readVizinhosFromFile(String fileName) {
+        List<InetAddress> vizinhos = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                InetAddress address = InetAddress.getByName(line);
+                vizinhos.add(address);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return vizinhos;
+    }
 }
