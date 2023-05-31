@@ -36,6 +36,8 @@ public class TabelaRoteamento {
                 }
             }
         }
+
+        imprimirTabela();
     }
 
     public synchronized void removerRota(String ipDestino) {
@@ -43,6 +45,8 @@ public class TabelaRoteamento {
             tabela.remove(ipDestino);
             System.out.println("Rota removida: " + ipDestino);
         }
+
+        imprimirTabela();
     }
 
     public synchronized String getTabelaString() {
@@ -55,7 +59,21 @@ public class TabelaRoteamento {
         return tabelaString.toString();
     }
 
+    public synchronized void imprimirTabela() {
+        System.out.println("Tabela de Roteamento:");
+        System.out.println("IP Destino\tMétrica\tIP de Saída");
+
+        for (Map.Entry<String, Rota> entry : tabela.entrySet()) {
+            String ipDestino = entry.getKey();
+            Rota rota = entry.getValue();
+            System.out.println(ipDestino + "\t\t" + rota.metrica + "\t\t" + rota.ipSaida);
+        }
+
+        System.out.println();
+    }
+
     private class Rota {
+
         private int metrica;
         private String ipSaida;
 

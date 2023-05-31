@@ -1,10 +1,13 @@
 package roteador;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +16,7 @@ public class Roteador {
     private static final String VIZINHOS_FILE = "IPVizinhos.txt";
 
     public static void main(String[] args) {
-        List<InetAddress> vizinhos = readVizinhosFromFile(VIZINHOS_FILE);
+        List<InetAddress> vizinhos = readVizinhosFromFile();
 
         try (DatagramSocket socket = new DatagramSocket()) {
             TabelaRoteamento tabela = new TabelaRoteamento();
@@ -34,18 +37,31 @@ public class Roteador {
         }
     }
 
-    private static List<InetAddress> readVizinhosFromFile(String fileName) {
+    private static List<InetAddress> readVizinhosFromFile() {
         List<InetAddress> vizinhos = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                InetAddress address = InetAddress.getByName(line);
-                vizinhos.add(address);
-            }
-        } catch (IOException e) {
+        // para testar localmente
+        try {
+            vizinhos.add(InetAddress.getByName("127.0.0.2"));
+            vizinhos.add(InetAddress.getByName("127.0.0.3"));
+        } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+
+//        URL path = Roteador.class.getResource(Roteador.VIZINHOS_FILE);
+//
+//        try {
+//            File file = new File(path.getFile());
+//            BufferedReader reader = new BufferedReader(new FileReader(file));
+//            String line;
+//
+//            while ((line = reader.readLine()) != null) {
+//                InetAddress address = InetAddress.getByName(line);
+//                vizinhos.add(address);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         return vizinhos;
     }
