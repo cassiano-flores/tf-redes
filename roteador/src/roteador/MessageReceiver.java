@@ -3,9 +3,12 @@ package roteador;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class MessageReceiver implements Runnable {
 
+    private static final Logger logger = Logger.getLogger(MessageReceiver.class.getName());
     private static final int BUFFER_SIZE = 1024;
     private DatagramSocket socket;
     private TabelaRoteamento tabela;
@@ -19,14 +22,20 @@ public class MessageReceiver implements Runnable {
     public void run() {
         byte[] buffer = new byte[BUFFER_SIZE];
 
+        logger.info("Thread MessageReceiver running...");
+
         while (true) {
             try {
                 DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE);
                 socket.receive(packet);
 
                 String message = new String(packet.getData(), 0, packet.getLength());
-                tabela.updateTabela(message, packet.getAddress());
+
+                logger.info(message);
+
+                //tabela.updateTabela(message, packet.getAddress());
             } catch (IOException e) {
+                logger.warning("Exception thrown");
                 e.printStackTrace();
             }
         }

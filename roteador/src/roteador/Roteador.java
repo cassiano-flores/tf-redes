@@ -10,15 +10,16 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
-public class Roteador {
-
+public class    Roteador {
     private static final String VIZINHOS_FILE = "IPVizinhos.txt";
 
     public static void main(String[] args) {
         List<InetAddress> vizinhos = readVizinhosFromFile();
 
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(5000)) {
             TabelaRoteamento tabela = new TabelaRoteamento();
 
             MessageReceiver receiver = new MessageReceiver(socket, tabela);
@@ -32,6 +33,7 @@ public class Roteador {
 
             receiverThread.join();
             senderThread.join();
+
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
