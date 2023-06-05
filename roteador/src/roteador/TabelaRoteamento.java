@@ -13,11 +13,13 @@ public class TabelaRoteamento {
 
     public TabelaRoteamento(String ip, InetAddress[] vizinhos) {
         tabela = new HashMap<>();
+        tabela_de_vizinhos = new HashMap<>();
         ip_host = ip;
         for(InetAddress v : vizinhos){
             String ipvizinho = v.toString().substring(1);
             Rota r = new Rota(1,ipvizinho);
             tabela.put(ipvizinho,r);
+            tabela_de_vizinhos.put(ipvizinho,r);
         }
     }
 
