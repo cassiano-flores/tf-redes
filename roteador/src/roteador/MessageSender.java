@@ -37,7 +37,7 @@ public class MessageSender implements Runnable {
                     tabela.zera_e_adiciona_vizinhos();
                 }
 
-                tabela.imprimirTabela();
+                //tabela.imprimirTabela();
                 delay++;
             }
         }, 0, SEND_INTERVAL);

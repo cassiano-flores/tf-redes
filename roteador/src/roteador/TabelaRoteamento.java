@@ -55,7 +55,7 @@ public class TabelaRoteamento {
                             rotaExistente.metrica = metrica + 1;
                             rotaExistente.ipSaida = ipSaida;
                             System.out.println("Rota atualizada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
-                            tabela_aprendizado = new HashMap<>();
+                            tabela_aprendizado.remove(ipDestino);
                             tabela_aprendizado.put(ipDestino,ipSaida);
                         }
 
@@ -69,17 +69,14 @@ public class TabelaRoteamento {
                             tabela_aprendizado.put(ipDestino,ipSaida);
                         }
 
-                        System.out.println("TABLELA GET IPDESTINO: "+tabela_aprendizado.get(ipDestino));
+                        System.out.println("TABLELA GET IPDESTINO: "+ ipDestino +"->" +tabela_aprendizado.get(ipDestino));
                         System.out.println("CONTAINS: "+tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress()));
 
                         tabela.put(ipDestino, new Rota(metrica, ipSaida));
 
+                        //recebeu uma rota de loop
                         if(!tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress())){
-                            if(tabela.containsKey(ipDestino)){
-                                if(tabela.get(ipDestino).ipSaida != tabela_aprendizado.get(ipDestino)){
-                                    tabela.remove(ipDestino);
-                                }
-                            }
+                            tabela.remove(ipDestino);
                         }
 
                         System.out.println("Nova rota adicionada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
