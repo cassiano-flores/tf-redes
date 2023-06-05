@@ -11,6 +11,8 @@ public class TabelaRoteamento {
     private Map<String, Rota> tabela;
     private String ip_host;
 
+    private int delay = 0;
+
     public TabelaRoteamento(String ip, InetAddress[] vizinhos) {
         tabela = new HashMap<>();
         tabela_de_vizinhos = new HashMap<>();
@@ -23,7 +25,18 @@ public class TabelaRoteamento {
         }
     }
 
+    public void zera_e_adiciona_vizinhos(){
+        tabela =  new HashMap<>();
+        for (String s : tabela_de_vizinhos.keySet()){
+            tabela.put(s,tabela_de_vizinhos.get(s));
+        }
+    }
+
     public synchronized void updateTabela(String message, InetAddress ipAddress) {
+        if(delay >= 3){
+            delay = 0;
+            zera_e_adiciona_vizinhos();
+        }
 
         System.out.println("IP HOST DA MENSAGEM: " + ipAddress.getHostAddress() + ", MENSAGEM RECEBIDA:" + message);
         String[] rotas = message.split("\\*");
@@ -63,6 +76,8 @@ public class TabelaRoteamento {
                 }
             }
         }
+
+        delay++;
 
         imprimirTabela();
     }
