@@ -19,7 +19,7 @@ public class MessageReceiver implements Runnable {
     public MessageReceiver(DatagramSocket socket, TabelaRoteamento tabela, String ip) {
         this.socket = socket;
         this.tabela = tabela;
-        this.ip_host = ip;
+        this.ip_host = ip.substring(1);
     }
 
     @Override
