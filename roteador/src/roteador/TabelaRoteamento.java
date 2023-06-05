@@ -43,7 +43,7 @@ public class TabelaRoteamento {
 
                         Rota rotaExistente = tabela.get(ipDestino);
                         if (metrica < rotaExistente.metrica) {
-                            rotaExistente.metrica = metrica;
+                            rotaExistente.metrica = metrica + 1;
                             rotaExistente.ipSaida = ipSaida;
                             System.out.println("Rota atualizada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
                         }
