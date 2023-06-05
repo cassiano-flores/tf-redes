@@ -14,7 +14,7 @@ public class TabelaRoteamento {
     public TabelaRoteamento(String ip, InetAddress[] vizinhos) {
         tabela = new HashMap<>();
         tabela_de_vizinhos = new HashMap<>();
-        ip_host = ip;
+        ip_host = ip.substring(1);
         for(InetAddress v : vizinhos){
             String ipvizinho = v.toString().substring(1);
             Rota r = new Rota(1,ipvizinho);
@@ -35,9 +35,9 @@ public class TabelaRoteamento {
                 String ipDestino = campos[0];
                 int metrica = Integer.parseInt(campos[1]);
                 String ipSaida = ipAddress.getHostAddress();
-                //System.out.println("IPHOST: "+ip_host+", ipdestino: "+ipDestino);
+                System.out.println("IPHOST: "+ip_host+", ipdestino: "+ipDestino);
 
-                if(!ip_host.equals(ipDestino)) {
+                if(!ipDestino.equals(ip_host)) {
 
                     if (tabela.containsKey(ipDestino)) {
 
