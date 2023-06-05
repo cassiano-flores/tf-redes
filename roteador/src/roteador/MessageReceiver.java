@@ -29,7 +29,6 @@ public class MessageReceiver implements Runnable {
         logger.info("Thread MessageReceiver running...");
 
         while (true) {
-
             try {
                 DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE, InetAddress.getByName(ip_host),5000);
                 socket.receive(packet);

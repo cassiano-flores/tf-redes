@@ -55,8 +55,8 @@ public class TabelaRoteamento {
                             rotaExistente.metrica = metrica + 1;
                             rotaExistente.ipSaida = ipSaida;
                             System.out.println("Rota atualizada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
-                            tabela_aprendizado.remove(ipDestino);
-                            tabela_aprendizado.put(ipDestino,ipSaida);
+                            tabela_aprendizado.remove(ipSaida);
+                            tabela_aprendizado.put(ipSaida,ipDestino);
                         }
 
                     } else {
@@ -66,17 +66,17 @@ public class TabelaRoteamento {
 
                         if(!is_vizinho){
                             metrica++;
-                            if(!tabela_aprendizado.containsKey(ipDestino))
-                                tabela_aprendizado.put(ipDestino,ipSaida);
+                            if(!contains_value_aprendizado(ipDestino))
+                                tabela_aprendizado.put(ipSaida,ipDestino);
                         }
 
-                        System.out.println("TABLELA GET IPDESTINO: "+ ipDestino +"->" +tabela_aprendizado.get(ipDestino));
-                        System.out.println("CONTAINS: "+tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress()));
+                        //System.out.println("TABLELA GET IPDESTINO: "+ ipDestino +"->" +tabela_aprendizado.get(ipDestino));
+                        //System.out.println("CONTAINS: "+tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress()));
 
                         tabela.put(ipDestino, new Rota(metrica, ipSaida));
 
                         //recebeu uma rota de loop
-                        if(!tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress())){
+                        if(!ip_aprendido(ipAddress.getHostAddress())){
                             tabela.remove(ipDestino);
                         }
 
@@ -88,6 +88,21 @@ public class TabelaRoteamento {
         }
 
         imprimirTabela();
+    }
+
+    public boolean ip_aprendido(String value){
+        for (String s:tabela_aprendizado.values()){
+            if (s == value)
+                return true;
+        }
+        return false;
+    }
+    public boolean contains_value_aprendizado(String value){
+        for (String s:tabela_aprendizado.keySet()){
+            if (tabela_aprendizado.get(s) == value)
+                return true;
+        }
+        return false;
     }
 
     public void add_rota_vizinho(Rota rota){
