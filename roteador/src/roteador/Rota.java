@@ -1,6 +1,7 @@
 package roteador;
 
 public class Rota {
+
     int metrica;
     String ipSaida;
 

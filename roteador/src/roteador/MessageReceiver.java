@@ -4,17 +4,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class MessageReceiver implements Runnable {
 
     private static final Logger logger = Logger.getLogger(MessageReceiver.class.getName());
     private static final int BUFFER_SIZE = 1024;
-    private DatagramSocket socket;
-    private TabelaRoteamento tabela;
-
-    private String ip_host;
+    private final DatagramSocket socket;
+    private final TabelaRoteamento tabela;
+    private final String ip_host;
 
     public MessageReceiver(DatagramSocket socket, TabelaRoteamento tabela, String ip) {
         this.socket = socket;
@@ -31,7 +29,7 @@ public class MessageReceiver implements Runnable {
         while (true) {
 
             try {
-                DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE, InetAddress.getByName(ip_host),5000);
+                DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE, InetAddress.getByName(ip_host), 5000);
                 socket.receive(packet);
 
                 String message = new String(packet.getData(), 0, packet.getLength());
