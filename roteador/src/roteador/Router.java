@@ -10,19 +10,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Roteador {
+public class Router {
 
-    private static final String VIZINHOS_FILE = "IPVizinhos.txt";
-    private static String ip_host;
+    private static final String NEIGHBORS_FILE = "IPNeighbors.txt";
+    private static String ipHost;
 
     public static void main(String[] args) {
-        List<InetAddress> vizinhos = readVizinhosFromFile();
+        List<InetAddress> neighbors = readNeighborsFromFile();
 
         try (DatagramSocket socket = new DatagramSocket(5000)) {
-            TabelaRoteamento tabela = new TabelaRoteamento(ip_host, vizinhos.toArray(new InetAddress[0]));
+            RoutingTable table = new RoutingTable(ipHost, neighbors.toArray(new InetAddress[0]));
 
-            MessageReceiver receiver = new MessageReceiver(socket, tabela, ip_host);
-            MessageSender sender = new MessageSender(socket, tabela, vizinhos.toArray(new InetAddress[0]));
+            MessageReceiver receiver = new MessageReceiver(socket, table, ipHost);
+            MessageSender sender = new MessageSender(socket, table, neighbors.toArray(new InetAddress[0]));
 
             Thread receiverThread = new Thread(receiver);
             Thread senderThread = new Thread(sender);
@@ -37,10 +37,10 @@ public class Roteador {
         }
     }
 
-    private static List<InetAddress> readVizinhosFromFile() {
-        List<InetAddress> vizinhos = new ArrayList<>();
+    private static List<InetAddress> readNeighborsFromFile() {
+        List<InetAddress> neighbors = new ArrayList<>();
 
-        URL path = Roteador.class.getResource(Roteador.VIZINHOS_FILE);
+        URL path = Router.class.getResource(Router.NEIGHBORS_FILE);
 
         try {
             File file = new File(path.getFile());
@@ -50,16 +50,16 @@ public class Roteador {
             while ((line = reader.readLine()) != null) {
                 InetAddress address = InetAddress.getByName(line);
 
-                if (ip_host == null) {
-                    ip_host = address.toString();
+                if (ipHost == null) {
+                    ipHost = address.toString();
                 } else {
-                    vizinhos.add(address);
+                    neighbors.add(address);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return vizinhos;
+        return neighbors;
     }
 }

@@ -11,13 +11,13 @@ public class MessageReceiver implements Runnable {
     private static final Logger logger = Logger.getLogger(MessageReceiver.class.getName());
     private static final int BUFFER_SIZE = 1024;
     private final DatagramSocket socket;
-    private final TabelaRoteamento tabela;
-    private final String ip_host;
+    private final RoutingTable table;
+    private final String ipHost;
 
-    public MessageReceiver(DatagramSocket socket, TabelaRoteamento tabela, String ip) {
+    public MessageReceiver(DatagramSocket socket, RoutingTable table, String ip) {
         this.socket = socket;
-        this.tabela = tabela;
-        this.ip_host = ip.substring(1);
+        this.table = table;
+        this.ipHost = ip.substring(1);
     }
 
     @Override
@@ -29,12 +29,12 @@ public class MessageReceiver implements Runnable {
         while (true) {
 
             try {
-                DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE, InetAddress.getByName(ip_host), 5000);
+                DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE, InetAddress.getByName(ipHost), 5000);
                 socket.receive(packet);
 
                 String message = new String(packet.getData(), 0, packet.getLength());
 
-                tabela.updateTabela(message, packet.getAddress());
+                table.updateTable(message, packet.getAddress());
             } catch (IOException e) {
                 logger.warning("Exception thrown");
                 e.printStackTrace();

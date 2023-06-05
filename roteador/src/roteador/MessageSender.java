@@ -11,14 +11,14 @@ public class MessageSender implements Runnable {
 
     private static final int SEND_INTERVAL = 10000;
     private final DatagramSocket socket;
-    private final TabelaRoteamento tabela;
-    private final InetAddress[] vizinhos;
+    private final RoutingTable table;
+    private final InetAddress[] neighbors;
     private int delay = 0;
 
-    public MessageSender(DatagramSocket socket, TabelaRoteamento tabela, InetAddress[] vizinhos) {
+    public MessageSender(DatagramSocket socket, RoutingTable table, InetAddress[] neighbors) {
         this.socket = socket;
-        this.tabela = tabela;
-        this.vizinhos = vizinhos;
+        this.table = table;
+        this.neighbors = neighbors;
     }
 
     @Override
@@ -28,33 +28,34 @@ public class MessageSender implements Runnable {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                sendTabela();
+                sendTable();
                 if (delay >= 3) {
                     delay = 0;
-                    tabela.zera_e_adiciona_vizinhos();
+                    table.resetAndAddNeighbors();
                 }
                 delay++;
+                table.printTable();
             }
         }, 0, SEND_INTERVAL);
     }
 
-    private void sendTabela() {
-        String tabelaString = tabela.getTabelaString();
+    private void sendTable() {
+        String tableString = table.getTableString();
         byte[] buffer;
 
-        for (InetAddress v : vizinhos) {
-            Rota r = new Rota(1, v.toString().substring(1));
-            tabela.add_rota_vizinho(r);
+        for (InetAddress neighbor : neighbors) {
+            Route route = new Route(1, neighbor.toString().substring(1));
+            table.addNeighborRoute(route);
         }
 
-        if (vizinhos.length == 0) {
+        if (neighbors.length == 0) {
             buffer = "!".getBytes();
         } else {
-            buffer = tabelaString.getBytes();
+            buffer = tableString.getBytes();
         }
 
-        for (InetAddress vizinho : vizinhos) {
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, vizinho, 5000);
+        for (InetAddress neighbor : neighbors) {
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, neighbor, 5000);
             try {
                 socket.send(packet);
             } catch (IOException e) {
