@@ -7,13 +7,13 @@ import java.util.Map;
 
 public class TabelaRoteamento {
 
+    private Map<String,String> tabela_aprendizado;
     private Map<String, Rota> tabela_de_vizinhos;
     private Map<String, Rota> tabela;
     private String ip_host;
 
-    private int delay = 0;
-
     public TabelaRoteamento(String ip, InetAddress[] vizinhos) {
+        tabela_aprendizado = new HashMap<>();
         tabela = new HashMap<>();
         tabela_de_vizinhos = new HashMap<>();
         ip_host = ip.substring(1);
@@ -26,17 +26,13 @@ public class TabelaRoteamento {
     }
 
     public void zera_e_adiciona_vizinhos(){
-        tabela =  new HashMap<>();
+        tabela = new HashMap<>();
         for (String s : tabela_de_vizinhos.keySet()){
             tabela.put(s,tabela_de_vizinhos.get(s));
         }
     }
 
     public synchronized void updateTabela(String message, InetAddress ipAddress) {
-        if(delay >= 3){
-            delay = 0;
-            zera_e_adiciona_vizinhos();
-        }
 
         System.out.println("IP HOST DA MENSAGEM: " + ipAddress.getHostAddress() + ", MENSAGEM RECEBIDA:" + message);
         String[] rotas = message.split("\\*");
@@ -59,6 +55,8 @@ public class TabelaRoteamento {
                             rotaExistente.metrica = metrica + 1;
                             rotaExistente.ipSaida = ipSaida;
                             System.out.println("Rota atualizada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
+                            tabela_aprendizado = new HashMap<>();
+                            tabela_aprendizado.put(ipDestino,ipSaida);
                         }
 
                     } else {
@@ -66,18 +64,20 @@ public class TabelaRoteamento {
                         if(tabela_de_vizinhos.containsKey(ipDestino))
                             is_vizinho = true;
 
-                        if(!is_vizinho)
+                        if(!is_vizinho){
                             metrica++;
+                            tabela_aprendizado.put(ipDestino,ipSaida);
+                        }
 
-                        tabela.put(ipDestino, new Rota(metrica, ipSaida));
+                        if(!tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress()))
+                            tabela.put(ipDestino, new Rota(metrica, ipSaida));
+
                         System.out.println("Nova rota adicionada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
                     }
 
                 }
             }
         }
-
-        delay++;
 
         imprimirTabela();
     }

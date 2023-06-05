@@ -15,6 +15,7 @@ public class MessageSender implements Runnable {
     private DatagramSocket socket;
     private TabelaRoteamento tabela;
     private InetAddress[] vizinhos;
+    private int delay = 0;
 
     public MessageSender(DatagramSocket socket, TabelaRoteamento tabela, InetAddress[] vizinhos) {
         this.socket = socket;
@@ -31,6 +32,13 @@ public class MessageSender implements Runnable {
             @Override
             public void run() {
                 sendTabela();
+                if(delay >= 3){
+                    delay = 0;
+                    tabela.zera_e_adiciona_vizinhos();
+                }
+
+                tabela.imprimirTabela();
+                delay++;
             }
         }, 0, SEND_INTERVAL);
     }
