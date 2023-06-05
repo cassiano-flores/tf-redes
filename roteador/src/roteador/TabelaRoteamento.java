@@ -112,16 +112,17 @@ public class TabelaRoteamento {
     }
 
     public synchronized void imprimirTabela() {
-        System.out.println("Tabela de Roteamento:");
-        System.out.println("IP Destino\tMétrica\tIP de Saída");
+        System.out.println("\n\n                Routing Table");
+        System.out.println("------------------------------------------------");
+        System.out.println("|  Destination IP  | Metric |    Outgoing IP   |");
+        System.out.println("------------------------------------------------");
 
         for (Map.Entry<String, Rota> entry : tabela.entrySet()) {
             String ipDestino = entry.getKey();
             Rota rota = entry.getValue();
-            System.out.println(ipDestino + "\t\t" + rota.metrica + "\t\t" + rota.ipSaida);
+            System.out.printf("| %1$-16s | %2$-6d | %3$-16s |\n", ipDestino, rota.metrica, rota.ipSaida);
         }
 
-        System.out.println();
+        System.out.println("------------------------------------------------");
     }
-
 }
