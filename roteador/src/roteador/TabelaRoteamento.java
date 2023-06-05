@@ -7,14 +7,17 @@ import java.util.Map;
 public class TabelaRoteamento {
 
     private Map<String, Rota> tabela;
+    private String ip_host;
 
-    public TabelaRoteamento() {
+    public TabelaRoteamento(String ip) {
         tabela = new HashMap<>();
+        ip_host = ip;
     }
 
-    public synchronized void updateTabela(String tabelaS, InetAddress ipAddress) {
-        System.out.println(ipAddress.getHostAddress() + ": " + tabelaS);
-        String[] rotas = tabelaS.split("\\*");
+    public synchronized void updateTabela(String message, InetAddress ipAddress) {
+
+        System.out.println("IP HOST DA MENSAGEM: " + ipAddress.getHostAddress() + ", MENSAGEM RECEBIDA:" + message);
+        String[] rotas = message.split("\\*");
 
         for (String rota : rotas) {
             String[] campos = rota.split(";");
@@ -22,17 +25,23 @@ public class TabelaRoteamento {
                 String ipDestino = campos[0];
                 int metrica = Integer.parseInt(campos[1]);
                 String ipSaida = ipAddress.getHostAddress();
-
-                if (tabela.containsKey(ipDestino)) {
-                    Rota rotaExistente = tabela.get(ipDestino);
-                    if (metrica < rotaExistente.metrica) {
-                        rotaExistente.metrica = metrica;
-                        rotaExistente.ipSaida = ipSaida;
-                        System.out.println("Rota atualizada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
+                //System.out.println("IPHOST: "+ip_host+", ipdestino: "+ipDestino);
+                if(!ip_host.equals(ipDestino)) {
+                    if(ipDestino != ipSaida){
+                        metrica++;
                     }
-                } else {
-                    tabela.put(ipDestino, new Rota(metrica, ipSaida));
-                    System.out.println("Nova rota adicionada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
+                    if (tabela.containsKey(ipDestino)) {
+                        Rota rotaExistente = tabela.get(ipDestino);
+                        if (metrica < rotaExistente.metrica) {
+                            rotaExistente.metrica = metrica;
+                            rotaExistente.ipSaida = ipSaida;
+                            System.out.println("Rota atualizada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
+                        }
+                    } else {
+                        tabela.put(ipDestino, new Rota(metrica, ipSaida));
+                        System.out.println("Nova rota adicionada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
+                    }
+
                 }
             }
         }

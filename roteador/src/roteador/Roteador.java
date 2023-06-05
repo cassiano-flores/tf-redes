@@ -13,13 +13,14 @@ import java.util.List;
 
 public class    Roteador {
     private static final String VIZINHOS_FILE = "IPVizinhos.txt";
+    private static final String ip_host = "26.219.143.93";
 
     public static void main(String[] args) {
         List<InetAddress> vizinhos = readVizinhosFromFile();
 
 
-        try (DatagramSocket socket = new DatagramSocket(5000) ) {
-            TabelaRoteamento tabela = new TabelaRoteamento();
+        try (DatagramSocket socket = new DatagramSocket(5000)) {
+            TabelaRoteamento tabela = new TabelaRoteamento(ip_host);
 
             MessageReceiver receiver = new MessageReceiver(socket, tabela);
             MessageSender sender = new MessageSender(socket, tabela, vizinhos.toArray(new InetAddress[0]));
@@ -45,6 +46,7 @@ public class    Roteador {
         try {
             vizinhos.add(InetAddress.getByName("26.9.78.66"));
             vizinhos.add(InetAddress.getByName("26.197.231.97"));
+            vizinhos.add(InetAddress.getByName("0.0.0.0"));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
