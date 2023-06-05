@@ -14,9 +14,12 @@ public class MessageReceiver implements Runnable {
     private DatagramSocket socket;
     private TabelaRoteamento tabela;
 
-    public MessageReceiver(DatagramSocket socket, TabelaRoteamento tabela) {
+    private String ip_host;
+
+    public MessageReceiver(DatagramSocket socket, TabelaRoteamento tabela, String ip) {
         this.socket = socket;
         this.tabela = tabela;
+        this.ip_host = ip;
     }
 
     @Override
@@ -26,8 +29,9 @@ public class MessageReceiver implements Runnable {
         logger.info("Thread MessageReceiver running...");
 
         while (true) {
+            tabela.imprimirTabela();
             try {
-                DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE, InetAddress.getByName("26.219.143.93"),5000);
+                DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE, InetAddress.getByName(ip_host),5000);
                 socket.receive(packet);
 
                 String message = new String(packet.getData(), 0, packet.getLength());

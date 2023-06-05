@@ -19,9 +19,9 @@ public class Roteador {
         List<InetAddress> vizinhos = readVizinhosFromFile();
 
         try (DatagramSocket socket = new DatagramSocket(5000)) {
-            TabelaRoteamento tabela = new TabelaRoteamento(ip_host);
+            TabelaRoteamento tabela = new TabelaRoteamento(ip_host,vizinhos.toArray(new InetAddress[0]));
 
-            MessageReceiver receiver = new MessageReceiver(socket, tabela);
+            MessageReceiver receiver = new MessageReceiver(socket, tabela, ip_host);
             MessageSender sender = new MessageSender(socket, tabela, vizinhos.toArray(new InetAddress[0]));
 
             Thread receiverThread = new Thread(receiver);

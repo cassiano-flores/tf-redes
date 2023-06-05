@@ -2,16 +2,23 @@ package roteador;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TabelaRoteamento {
 
+    private Map<String, Rota> tabela_de_vizinhos;
     private Map<String, Rota> tabela;
     private String ip_host;
 
-    public TabelaRoteamento(String ip) {
+    public TabelaRoteamento(String ip, InetAddress[] vizinhos) {
         tabela = new HashMap<>();
         ip_host = ip;
+        for(InetAddress v : vizinhos){
+            String ipvizinho = v.toString().substring(1);
+            Rota r = new Rota(1,ipvizinho);
+            tabela.put(ipvizinho,r);
+        }
     }
 
     public synchronized void updateTabela(String message, InetAddress ipAddress) {
@@ -21,23 +28,32 @@ public class TabelaRoteamento {
 
         for (String rota : rotas) {
             String[] campos = rota.split(";");
+
             if (campos.length == 2) {
                 String ipDestino = campos[0];
                 int metrica = Integer.parseInt(campos[1]);
                 String ipSaida = ipAddress.getHostAddress();
                 //System.out.println("IPHOST: "+ip_host+", ipdestino: "+ipDestino);
+
                 if(!ip_host.equals(ipDestino)) {
-                    if(ipDestino != ipSaida){
-                        metrica++;
-                    }
+
                     if (tabela.containsKey(ipDestino)) {
+
                         Rota rotaExistente = tabela.get(ipDestino);
                         if (metrica < rotaExistente.metrica) {
                             rotaExistente.metrica = metrica;
                             rotaExistente.ipSaida = ipSaida;
                             System.out.println("Rota atualizada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
                         }
+
                     } else {
+                        boolean is_vizinho = false;
+                        if(tabela_de_vizinhos.containsKey(ipDestino))
+                            is_vizinho = true;
+
+                        if(!is_vizinho)
+                            metrica++;
+
                         tabela.put(ipDestino, new Rota(metrica, ipSaida));
                         System.out.println("Nova rota adicionada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
                     }
