@@ -44,7 +44,7 @@ public class TabelaRoteamento {
                 String ipDestino = campos[0];
                 int metrica = Integer.parseInt(campos[1]);
                 String ipSaida = ipAddress.getHostAddress();
-                System.out.println("IPHOST: "+ip_host+", ipdestino: "+ipDestino);
+                //System.out.println("IPHOST: "+ip_host+", ipdestino: "+ipDestino);
 
                 if(!ipDestino.equals(ip_host)) {
 
@@ -69,8 +69,18 @@ public class TabelaRoteamento {
                             tabela_aprendizado.put(ipDestino,ipSaida);
                         }
 
-                        if(!tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress()))
-                            tabela.put(ipDestino, new Rota(metrica, ipSaida));
+                        System.out.println("TABLELA GET IPDESTINO: "+tabela_aprendizado.get(ipDestino));
+                        System.out.println("CONTAINS: "+tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress()));
+
+                        tabela.put(ipDestino, new Rota(metrica, ipSaida));
+
+                        if(!tabela_aprendizado.get(ipDestino).equals(ipAddress.getHostAddress())){
+                            if(tabela.containsKey(ipDestino)){
+                                if(tabela.get(ipDestino).ipSaida != tabela_aprendizado.get(ipDestino)){
+                                    tabela.remove(ipDestino);
+                                }
+                            }
+                        }
 
                         System.out.println("Nova rota adicionada: " + ipDestino + " Métrica: " + metrica + " IP de Saída: " + ipSaida);
                     }
