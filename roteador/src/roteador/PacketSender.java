@@ -12,7 +12,7 @@ public class PacketSender {
             String message = "Hello, roteador!";
             byte[] buffer = message.getBytes();
 
-            InetAddress enderecoDestino = InetAddress.getByName("127.0.0.2");
+            InetAddress enderecoDestino = InetAddress.getByName("26.219.143.93");
 
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, enderecoDestino, 5000);
             socket.send(packet);

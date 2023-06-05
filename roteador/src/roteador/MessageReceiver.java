@@ -3,6 +3,7 @@ package roteador;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -26,14 +27,12 @@ public class MessageReceiver implements Runnable {
 
         while (true) {
             try {
-                DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE);
+                DatagramPacket packet = new DatagramPacket(buffer, BUFFER_SIZE, InetAddress.getByName("26.219.143.93"),5000);
                 socket.receive(packet);
 
                 String message = new String(packet.getData(), 0, packet.getLength());
 
-                logger.info(message);
-
-                //tabela.updateTabela(message, packet.getAddress());
+                tabela.updateTabela(message, packet.getAddress());
             } catch (IOException e) {
                 logger.warning("Exception thrown");
                 e.printStackTrace();

@@ -10,8 +10,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 public class    Roteador {
     private static final String VIZINHOS_FILE = "IPVizinhos.txt";
@@ -19,7 +17,8 @@ public class    Roteador {
     public static void main(String[] args) {
         List<InetAddress> vizinhos = readVizinhosFromFile();
 
-        try (DatagramSocket socket = new DatagramSocket(5000)) {
+
+        try (DatagramSocket socket = new DatagramSocket(5000) ) {
             TabelaRoteamento tabela = new TabelaRoteamento();
 
             MessageReceiver receiver = new MessageReceiver(socket, tabela);
@@ -44,8 +43,8 @@ public class    Roteador {
 
         // para testar localmente
         try {
-            vizinhos.add(InetAddress.getByName("127.0.0.2"));
-            vizinhos.add(InetAddress.getByName("127.0.0.3"));
+            vizinhos.add(InetAddress.getByName("26.9.78.66"));
+            vizinhos.add(InetAddress.getByName("26.197.231.97"));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

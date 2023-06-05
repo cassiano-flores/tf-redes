@@ -40,6 +40,9 @@ public class TabelaRoteamento {
         imprimirTabela();
     }
 
+    public void add_rota_vizinho(Rota rota){
+        tabela.put(rota.ipSaida,rota);
+    }
     public synchronized void removerRota(String ipDestino) {
         if (tabela.containsKey(ipDestino)) {
             tabela.remove(ipDestino);
@@ -72,14 +75,4 @@ public class TabelaRoteamento {
         System.out.println();
     }
 
-    private class Rota {
-
-        private int metrica;
-        private String ipSaida;
-
-        public Rota(int metrica, String ipSaida) {
-            this.metrica = metrica;
-            this.ipSaida = ipSaida;
-        }
-    }
 }

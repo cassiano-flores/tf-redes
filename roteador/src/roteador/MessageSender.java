@@ -6,9 +6,11 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 public class MessageSender implements Runnable {
 
+    private static final Logger logger = Logger.getLogger(MessageSender.class.getName());
     private static final int SEND_INTERVAL = 10000;
     private DatagramSocket socket;
     private TabelaRoteamento tabela;
@@ -18,6 +20,7 @@ public class MessageSender implements Runnable {
         this.socket = socket;
         this.tabela = tabela;
         this.vizinhos = vizinhos;
+        logger.info("vizinhos length: "+vizinhos.length);
     }
 
     @Override
@@ -34,6 +37,12 @@ public class MessageSender implements Runnable {
 
     private void sendTabela() {
         String tabelaString = tabela.getTabelaString();
+
+        for (InetAddress v : vizinhos){
+            Rota r = new Rota(1,v.toString().substring(1));
+            tabela.add_rota_vizinho(r);
+        }
+
         byte[] buffer = tabelaString.getBytes();
 
         for (InetAddress vizinho : vizinhos) {
