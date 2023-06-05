@@ -66,7 +66,8 @@ public class TabelaRoteamento {
 
                         if(!is_vizinho){
                             metrica++;
-                            tabela_aprendizado.put(ipDestino,ipSaida);
+                            if(!tabela_aprendizado.containsKey(ipDestino))
+                                tabela_aprendizado.put(ipDestino,ipSaida);
                         }
 
                         System.out.println("TABLELA GET IPDESTINO: "+ ipDestino +"->" +tabela_aprendizado.get(ipDestino));
